@@ -15,7 +15,7 @@ router = APIRouter(prefix="/exercises", tags=["Exercises"])
 
 @router.get("")
 async def get_all_exercises(service=exercise_service) -> list[ExerciseSelect]:
-    return await service.get_exercises()
+    return await service.gets_exercises()
 
 
 @router.get("/{exercise_id}")

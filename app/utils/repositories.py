@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-from sqlalchemy import insert, select, update, delete
+from typing import Tuple
+from sqlalchemy import Result, insert, select, update, delete
 from uuid import UUID
+
+from ..models.gym import Equipment, Muscle
 
 from ..models.exercises import Exercise
 from ..models.mixins import BaseTable
@@ -42,7 +45,10 @@ class SQLAlchemyRepository(AbstractRepository):
         async with sessionmanager.session() as session:
             query = select(self.model).where(self.model.__dict__[_column] == id)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            result = result.scalar_one_or_none()
+            if not result:
+                return None
+            return result.to_detail_model()
 
     async def get(self, filter: tuple | None = None):
         async with sessionmanager.session() as session:
@@ -50,14 +56,14 @@ class SQLAlchemyRepository(AbstractRepository):
             if filter:
                 query.filter(*filter)
             result = await session.execute(query)
-            return result.scalars().all()
+            return [row[0].to_read_model() for row in result.all()]
 
     async def insert(self, data: dict):
         async with sessionmanager.session() as session:
             query = insert(self.model).values(**data).returning(self.model)
             result = await session.execute(query)
             await session.commit()
-            return result.scalar_one_or_none()
+            return result.scalar_one().to_read_model()
 
     async def update(self, id: PrimaryKey, data: dict, _column="id"):
         async with sessionmanager.session() as session:
@@ -69,7 +75,7 @@ class SQLAlchemyRepository(AbstractRepository):
             )
             result = await session.execute(query)
             await session.commit()
-            return result.scalar_one_or_none()
+            return result.scalar_one().to_detail_model()
 
     async def delete(self, id: PrimaryKey, _column="id"):
         async with sessionmanager.session() as session:
@@ -80,7 +86,7 @@ class SQLAlchemyRepository(AbstractRepository):
             )
             result = await session.execute(query)
             await session.commit()
-            return result.scalar_one_or_none()
+            return result.scalar_one().to_detail_model()
 
     async def custom(self, statement, _commit=False):
         async with sessionmanager.session() as session:
@@ -92,3 +98,11 @@ class SQLAlchemyRepository(AbstractRepository):
 
 class ExercisesRepository(SQLAlchemyRepository):
     model = Exercise
+
+
+class MuscleRepository(SQLAlchemyRepository):
+    model = Muscle
+
+
+class EquipmentRepository(SQLAlchemyRepository):
+    model = Equipment

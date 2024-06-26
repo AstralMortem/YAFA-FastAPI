@@ -1,6 +1,8 @@
 from uuid import UUID
 from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
+from ..schemas.exercises import ExerciseRead, ExerciseSelect
 from .mixins import BaseTable, CommonUUIDMixin
 from ..utils.enums import ExerciseTypeEnum
 
@@ -15,3 +17,6 @@ class Exercise(CommonUUIDMixin, BaseTable):
     image: Mapped[str | None] = mapped_column(default=None)
     author_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), default=None)
     is_public: Mapped[bool] = mapped_column(default=False)
+
+    READ_MODEL = ExerciseSelect
+    DETAIL_MODEL = ExerciseRead

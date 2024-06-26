@@ -29,6 +29,7 @@ class ExerciseRead(ExerciseCreate):
 
 
 class ExerciseSelect(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     title: str
     level: int
