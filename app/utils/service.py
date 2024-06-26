@@ -1,33 +1,38 @@
-from typing import Any, Callable
-from .repositories import AbstractRepository, PrimaryKey, SQLAlchemyRepository
+from ast import Call
+from typing import Any, Callable, Generic, Self, TypeVar
 from pydantic import BaseModel
+from sqlalchemy import BinaryExpression
+
+from .repository import PrimaryKey, SQLAlchemyRepository, Model
+
+CREATE_MODEL = TypeVar("CREATE_MODEL", bound=BaseModel)
+UPDATE_MODEL = TypeVar("UPDATE_MODEL", bound=BaseModel)
+READ_MODEL = TypeVar("READ_MODEL", bound=BaseModel)
+LIST_MODEL = TypeVar("LIST_MODEL", bound=BaseModel)
 
 
-class SimpleCRUDService(object):
-    repo: AbstractRepository
+class BaseCRUDService(Generic[CREATE_MODEL, UPDATE_MODEL, READ_MODEL, LIST_MODEL]):
+    def __init__(self, repository: Callable[[], SQLAlchemyRepository[Model]]):
+        self.repository: SQLAlchemyRepository[Model] = repository()
+        self.read_model: type[READ_MODEL]
+        self.list_model: type[LIST_MODEL]
 
-    def __init__(self, repository: type[AbstractRepository]):
-        self.repo = repository()
+    async def add(self, data: CREATE_MODEL):
+        instance = await self.repository.create(data.model_dump())
+        return self.list_model.model_validate(instance)
 
-    def __getattribute__(self, name: str):
-        keys = ["add", "gets", "get", "update", "delete"]
-        print(name)
-        for key in keys:
-            if name.startswith(key):
-                return super().__getattribute__(key)
-        return super().__getattribute__(name)
+    async def update(self, pk: PrimaryKey, data: UPDATE_MODEL):
+        instance = await self.repository.update(pk, data.model_dump())
+        return self.read_model.model_validate(instance)
 
-    async def add(self, data: BaseModel):
-        return await self.repo.insert(data.model_dump())
+    async def get(self, pk: PrimaryKey):
+        instance = await self.repository.get(pk)
+        return self.read_model.model_validate(instance)
 
-    async def gets(self, *args):
-        return await self.repo.get(*args)
+    async def filter(self, join=None, *filter: BinaryExpression):
+        instance = await self.repository.filter(join, *filter)
+        return [self.list_model.model_validate(obj) for obj in instance]
 
-    async def get(self, id: PrimaryKey, *args):
-        return await self.repo.get_one(id, *args)
-
-    async def update(self, id: PrimaryKey, data: BaseModel, *args):
-        return await self.repo.update(id, data.model_dump(), *args)
-
-    async def delete(self, id: PrimaryKey, *args):
-        return await self.repo.delete(id, *args)
+    async def delete(self, pk: PrimaryKey):
+        instance = await self.repository.delete(pk)
+        return self.read_model.model_validate(instance)

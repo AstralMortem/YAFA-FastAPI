@@ -1,26 +1,28 @@
 from typing import Annotated
 from fastapi import Depends
-from .utils.repositories import (
-    EquipmentRepository,
-    ExercisesRepository,
-    MuscleRepository,
-)
-from .services.gym import ExerciseService, EquipmentService, MuscleService
 from .services.auth import fastapi_users
 from .models.auth import User
+from .services.gym import EquipmentService, MuscleService
+from .services.exercises import ExerciseService
+from .repositories.gym import EquipmentRepository, MuscleRepository
+from .repositories.exercises import ExerciseRepository
+
 
 secured_route: Annotated[User, Depends()] = Depends(
     fastapi_users.current_user(active=True)
 )
 
-exercise_service: Annotated[ExerciseService, Depends()] = Depends(
-    lambda: ExerciseService(ExercisesRepository)
-)
+equipment_service = Annotated[
+    EquipmentService,
+    Depends(lambda: EquipmentService(EquipmentRepository)),
+]
 
-equipment_service: Annotated[EquipmentService, Depends()] = Depends(
-    lambda: EquipmentService(EquipmentRepository)
-)
+muscle_service = Annotated[
+    MuscleService,
+    Depends(lambda: MuscleService(MuscleRepository)),
+]
 
-muscle_service: Annotated[MuscleService, Depends()] = Depends(
-    lambda: MuscleService(MuscleRepository)
-)
+exercise_service = Annotated[
+    ExerciseService,
+    Depends(lambda: ExerciseService(ExerciseRepository)),
+]

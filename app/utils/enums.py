@@ -19,3 +19,8 @@ class ExerciseTypeEnum(Enum):
     cardio_duration = "cardio_duration"
     cardio_lenght = "cardio_lenght"
     stretch = "stretch"
+
+
+class MuscleEnum(Enum):
+    main = "main"
+    secondary = "secondary"

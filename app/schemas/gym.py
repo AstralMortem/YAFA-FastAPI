@@ -16,8 +16,6 @@ class EquipmentUpdate(EquipmentCreate): ...
 
 class EquipmentRead(EquipmentCreate):
     id: int
-    created_at: datetime
-    updated_at: datetime | None
 
 
 class MuscleCreate(BaseGym): ...
@@ -28,5 +26,3 @@ class MuscleUpdate(MuscleCreate): ...
 
 class MuscleRead(MuscleCreate):
     id: int
-    created_at: datetime
-    updated_at: datetime | None

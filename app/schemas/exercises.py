@@ -1,8 +1,10 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
+
 from ..utils.enums import ExerciseTypeEnum
-from .auth import UserRead
+
+from .gym import MuscleRead, EquipmentRead, MuscleCreate, EquipmentCreate
 
 
 class ExerciseCreate(BaseModel):
@@ -16,6 +18,8 @@ class ExerciseCreate(BaseModel):
     author_id: UUID | None = None
     is_public: bool = False
     is_active: bool = True
+    equipments: list[EquipmentCreate] = []
+    muscles: list[MuscleCreate] = []
 
 
 class ExerciseUpdate(ExerciseCreate):
@@ -26,9 +30,11 @@ class ExerciseRead(ExerciseCreate):
     id: UUID
     created_at: datetime
     updated_at: datetime | None
+    equipments: list[EquipmentRead] = []
+    muscles: list[MuscleRead] = []
 
 
-class ExerciseSelect(BaseModel):
+class ExerciseList(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
     title: str
@@ -37,3 +43,5 @@ class ExerciseSelect(BaseModel):
     author_id: UUID | None = None
     is_public: bool = False
     is_active: bool = True
+    equipments: list[EquipmentRead] = []
+    muscles: list[MuscleRead] = []

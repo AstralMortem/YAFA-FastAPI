@@ -1,21 +1,27 @@
-from ..schemas.exercises import ExerciseCreate
-from ..utils.service import SimpleCRUDService
+from ..utils.service import BaseCRUDService
+from ..schemas.gym import (
+    EquipmentCreate,
+    EquipmentRead,
+    EquipmentUpdate,
+    MuscleCreate,
+    MuscleRead,
+    MuscleUpdate,
+)
 
 
-class ExerciseService(SimpleCRUDService):
+class EquipmentService(
+    BaseCRUDService[EquipmentCreate, EquipmentUpdate, EquipmentRead, EquipmentRead]
+):
     def __init__(self, *args, **kwargs):
-        super(ExerciseService, self).__init__(*args, **kwargs)
-
-    async def add_exercise(self, data: ExerciseCreate):
-        record = await self.add(data)
-        return {"id": record.id}
+        super().__init__(*args, **kwargs)
+        self.read_model = EquipmentRead
+        self.list_model = EquipmentRead
 
 
-class EquipmentService(SimpleCRUDService):
+class MuscleService(
+    BaseCRUDService[MuscleCreate, MuscleUpdate, MuscleRead, MuscleRead]
+):
     def __init__(self, *args, **kwargs):
-        super(EquipmentService, self).__init__(*args, **kwargs)
-
-
-class MuscleService(SimpleCRUDService):
-    def __init__(self, *args, **kwargs):
-        super(MuscleService, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.read_model = MuscleRead
+        self.list_model = MuscleRead

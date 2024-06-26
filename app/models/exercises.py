@@ -1,10 +1,9 @@
 from uuid import UUID
 from sqlalchemy import Enum, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
-
-from ..schemas.exercises import ExerciseRead, ExerciseSelect
-from .mixins import BaseTable, CommonUUIDMixin
-from ..utils.enums import ExerciseTypeEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .mixins import BaseTable, CommonUUIDMixin, TimestampMixin
+from ..utils.enums import ExerciseTypeEnum, MuscleEnum
+from .gym import Muscle, Equipment
 
 
 class Exercise(CommonUUIDMixin, BaseTable):
@@ -18,5 +17,30 @@ class Exercise(CommonUUIDMixin, BaseTable):
     author_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), default=None)
     is_public: Mapped[bool] = mapped_column(default=False)
 
-    READ_MODEL = ExerciseSelect
-    DETAIL_MODEL = ExerciseRead
+    # relations
+    equipments: Mapped[list["Equipment"]] = relationship(
+        secondary="equipment_exercise_rel", lazy="selectin"
+    )
+    muscles: Mapped[list["Muscle"]] = relationship(
+        secondary="muscle_exercise_rel", lazy="selectin"
+    )
+
+
+class EquipmentExerciseRel(TimestampMixin, BaseTable):
+    __tablename__ = "equipment_exercise_rel"
+    equipment_id: Mapped[int] = mapped_column(
+        ForeignKey("equipments.id"), primary_key=True
+    )
+    exercise_id: Mapped[UUID] = mapped_column(
+        ForeignKey("exercises.id"), primary_key=True
+    )
+
+
+class MuscleExerciseRel(TimestampMixin, BaseTable):
+    __tablename__ = "muscle_exercise_rel"
+    muscle_id: Mapped[int] = mapped_column(ForeignKey("muscles.id"), primary_key=True)
+    exercise_id: Mapped[UUID] = mapped_column(
+        ForeignKey("exercises.id"), primary_key=True
+    )
+    procent: Mapped[int] = mapped_column(default=1)  # from 1 to 100
+    type: Mapped[Enum] = mapped_column(Enum(MuscleEnum))

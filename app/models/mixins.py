@@ -1,13 +1,10 @@
 from datetime import datetime
 from uuid import UUID, uuid4
-from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class BaseTable(DeclarativeBase):
-    READ_MODEL: type[BaseModel] | None = None
-    DETAIL_MODEL: type[BaseModel] | None = None
     repr_cols_num = 3
     repr_cols = tuple()
 
@@ -19,16 +16,6 @@ class BaseTable(DeclarativeBase):
                 cols.append(f"{col}={getattr(self, col)}")
 
         return f"<{self.__class__.__name__} {', '.join(cols)}>"
-
-    def to_read_model(self):
-        if not self.READ_MODEL:
-            raise NotImplemented
-        return self.READ_MODEL.model_validate(self)
-
-    def to_detail_model(self):
-        if not self.DETAIL_MODEL:
-            raise NotImplemented
-        return self.DETAIL_MODEL.model_validate(self)
 
 
 class UUIDPrimaryKey:
