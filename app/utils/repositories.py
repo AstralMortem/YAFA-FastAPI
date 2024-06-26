@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from sqlalchemy import insert, select, update, delete
 from uuid import UUID
+
+from ..models.exercises import Exercise
 from ..models.mixins import BaseTable
 from ..database import sessionmanager
 
@@ -86,3 +88,7 @@ class SQLAlchemyRepository(AbstractRepository):
             if _commit:
                 await session.commit()
             return result
+
+
+class ExercisesRepository(SQLAlchemyRepository):
+    model = Exercise
