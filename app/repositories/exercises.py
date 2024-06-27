@@ -1,3 +1,4 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from ..schemas.gym import MuscleFrontCreate
 from ..models.exercises import EquipmentExerciseRel, Exercise, MuscleExerciseRel
 from ..utils.repository import Model, PrimaryKey, SQLAlchemyRepository
@@ -5,8 +6,10 @@ from ..database import sessionmanager
 
 
 class ExerciseRepository(SQLAlchemyRepository[Exercise]):
-    def __init__(self, *args, **kwargs):
-        super().__init__(Exercise, *args, **kwargs)
+    def __init__(self, model: type[Exercise], session: AsyncSession, *args, **kwargs):
+        self.model = model
+        self.session = session
+        super().__init__(model, session, *args, **kwargs)
 
     async def insert_exercise_relations(
         self,
@@ -14,7 +17,6 @@ class ExerciseRepository(SQLAlchemyRepository[Exercise]):
         relations: list[dict],
         table: type[MuscleExerciseRel] | type[EquipmentExerciseRel],
     ):
-        async with sessionmanager.session() as session:
-            for rel in relations:
-                session.add(table(exercise_id=exercise_id, **rel))
-            await session.commit()
+        for rel in relations:
+            self.session.add(table(exercise_id=exercise_id, **rel))
+        await self.session.commit()

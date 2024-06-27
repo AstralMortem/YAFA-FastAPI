@@ -34,4 +34,5 @@ class BaseCRUDService(Generic[CREATE_MODEL, UPDATE_MODEL, READ_MODEL, LIST_MODEL
         return [self.list_model.model_validate(obj) for obj in instance]
 
     async def delete(self, pk: PrimaryKey, *args, **kwargs):
-        await self.repository.delete(pk, *args, **kwargs)
+        instance = await self.repository.delete(pk, *args, **kwargs)
+        return self.read_model.model_validate(instance)
