@@ -10,12 +10,12 @@ router = APIRouter(prefix="/exercises", tags=["Exercises"])
 
 @router.get("")
 async def get_all_exercises(service: exercise_service):
-    return await service.filter()
+    return await service.get_joined_exercises()
 
 
 @router.get("/{exercise_id}")
 async def get_exercise(exercise_id: UUID, service: exercise_service):
-    return await service.get(exercise_id)
+    return await service.get_joined_exercise_by_id(exercise_id)
 
 
 @router.post("")

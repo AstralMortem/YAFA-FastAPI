@@ -1,6 +1,8 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Tuple
 from uuid import UUID
-from sqlalchemy import BinaryExpression, select, update
+from sqlalchemy import BinaryExpression, Executable, Result, select, update
+from sqlalchemy.sql.base import ExecutableOption
+from sqlalchemy.sql.selectable import TypedReturnsRows, _T
 from ..database import sessionmanager
 from ..models.mixins import BaseTable
 
@@ -27,13 +29,20 @@ class SQLAlchemyRepository(Generic[Model]):
                 raise Exception(f"{self.model} does not exist")
             return instance
 
-    async def filter(self, join=None, *expressions: BinaryExpression):
+    async def filter(
+        self,
+        expressions: Tuple[BinaryExpression] | None = None,
+        options: Tuple[ExecutableOption] | ExecutableOption | None = None,
+    ):
         async with sessionmanager.session() as session:
             query = select(self.model)
-            if join:
-                query = query.join(join)
-            if expressions:
+            if isinstance(expressions, Tuple):
                 query = query.where(*expressions)
+            if options:
+                if isinstance(options, Tuple):
+                    query = query.options(*options)
+                else:
+                    query = query.options(options)
             return list(await session.scalars(query))
 
     async def delete(self, pk: PrimaryKey):
@@ -53,3 +62,7 @@ class SQLAlchemyRepository(Generic[Model]):
             )
             result = await session.execute(query)
             return result.scalar_one()
+
+    async def custom(self, statement: TypedReturnsRows[_T]) -> Result[_T]:
+        async with sessionmanager.session() as session:
+            return await session.execute(statement)

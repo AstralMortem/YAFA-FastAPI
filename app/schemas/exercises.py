@@ -4,7 +4,13 @@ from pydantic import BaseModel, ConfigDict
 
 from ..utils.enums import ExerciseTypeEnum
 
-from .gym import MuscleRead, EquipmentRead, MuscleCreate, EquipmentCreate
+from .gym import (
+    MuscleFrontRead,
+    MuscleRead,
+    EquipmentRead,
+    MuscleCreate,
+    EquipmentCreate,
+)
 
 
 class ExerciseCreate(BaseModel):
@@ -18,8 +24,6 @@ class ExerciseCreate(BaseModel):
     author_id: UUID | None = None
     is_public: bool = False
     is_active: bool = True
-    equipments: list[EquipmentCreate] = []
-    muscles: list[MuscleCreate] = []
 
 
 class ExerciseUpdate(ExerciseCreate):
@@ -31,7 +35,7 @@ class ExerciseRead(ExerciseCreate):
     created_at: datetime
     updated_at: datetime | None
     equipments: list[EquipmentRead] = []
-    muscles: list[MuscleRead] = []
+    muscle_details: list[MuscleFrontRead] = []
 
 
 class ExerciseList(BaseModel):
@@ -40,8 +44,6 @@ class ExerciseList(BaseModel):
     title: str
     level: int
     image: str | None = None
-    author_id: UUID | None = None
     is_public: bool = False
     is_active: bool = True
-    equipments: list[EquipmentRead] = []
-    muscles: list[MuscleRead] = []
+    muscles: list[str] = []

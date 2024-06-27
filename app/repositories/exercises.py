@@ -1,5 +1,5 @@
 from ..models.exercises import Exercise
-from ..utils.repository import SQLAlchemyRepository
+from ..utils.repository import PrimaryKey, SQLAlchemyRepository
 
 
 class ExerciseRepository(SQLAlchemyRepository[Exercise]):

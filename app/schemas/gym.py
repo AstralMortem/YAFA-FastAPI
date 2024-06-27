@@ -1,5 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
+from ..utils.enums import MuscleEnum
 
 
 class BaseGym(BaseModel):
@@ -26,3 +27,12 @@ class MuscleUpdate(MuscleCreate): ...
 
 class MuscleRead(MuscleCreate):
     id: int
+
+
+class MuscleFrontRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    procent: int
+    type: MuscleEnum
+    id: int
+    title: str
+    image: str | None = None

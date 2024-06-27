@@ -1,9 +1,12 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .mixins import BaseTable, CommonUUIDMixin, TimestampMixin
 from ..utils.enums import ExerciseTypeEnum, MuscleEnum
-from .gym import Muscle, Equipment
+
+if TYPE_CHECKING:
+    from .gym import Muscle, Equipment
 
 
 class Exercise(CommonUUIDMixin, BaseTable):
@@ -17,12 +20,14 @@ class Exercise(CommonUUIDMixin, BaseTable):
     author_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), default=None)
     is_public: Mapped[bool] = mapped_column(default=False)
 
-    # relations
     equipments: Mapped[list["Equipment"]] = relationship(
-        secondary="equipment_exercise_rel", lazy="selectin"
+        secondary="equipment_exercise_rel"
     )
-    muscles: Mapped[list["Muscle"]] = relationship(
-        secondary="muscle_exercise_rel", lazy="selectin"
+    equipment_details: Mapped[list["EquipmentExerciseRel"]] = relationship(
+        back_populates="exercise"
+    )
+    muscle_details: Mapped[list["MuscleExerciseRel"]] = relationship(
+        back_populates="exercise"
     )
 
 
@@ -35,6 +40,12 @@ class EquipmentExerciseRel(TimestampMixin, BaseTable):
         ForeignKey("exercises.id"), primary_key=True
     )
 
+    # association between MuscleExerciseRel -> Exercise
+    exercise: Mapped["Exercise"] = relationship(back_populates="equipment_details")
+
+    # association between MuscleExerciseRel -> Equipment
+    equipment: Mapped["Equipment"] = relationship(back_populates="exercise_details")
+
 
 class MuscleExerciseRel(TimestampMixin, BaseTable):
     __tablename__ = "muscle_exercise_rel"
@@ -44,3 +55,9 @@ class MuscleExerciseRel(TimestampMixin, BaseTable):
     )
     procent: Mapped[int] = mapped_column(default=1)  # from 1 to 100
     type: Mapped[Enum] = mapped_column(Enum(MuscleEnum))
+
+    # association between MuscleExerciseRel -> Exercise
+    exercise: Mapped["Exercise"] = relationship(back_populates="muscle_details")
+
+    # association between MuscleExerciseRel -> Muscle
+    muscle: Mapped["Muscle"] = relationship(back_populates="exercise_details")
