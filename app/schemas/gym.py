@@ -36,3 +36,13 @@ class MuscleFrontRead(BaseModel):
     id: int
     title: str
     image: str | None = None
+
+
+class MuscleFrontCreate(BaseModel):
+    muscle_id: int
+    type: MuscleEnum
+    procent: int = 1
+
+
+class EquipmentFrontCreate(BaseModel):
+    equipment_id: int

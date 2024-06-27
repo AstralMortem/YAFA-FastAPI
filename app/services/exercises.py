@@ -2,7 +2,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload, load_only, selectinload
 from ..utils.enums import MuscleEnum
 
-from ..schemas.gym import MuscleFrontRead
+from ..schemas.gym import EquipmentFrontCreate, MuscleFrontCreate, MuscleFrontRead
 
 from ..utils.repository import PrimaryKey
 
@@ -82,3 +82,15 @@ class ExerciseService(
         result.__dict__["muscle_details"] = muscles_details
 
         return ExerciseRead.model_validate(result)
+
+    async def create_exercise(self, data: ExerciseCreate):
+        data_dict = data.model_dump().pop("muscles").pop("equipments")
+        muscles: list[MuscleFrontCreate] = data.muscles
+        equipments: list[EquipmentFrontCreate] = data.equipments
+        instance = await self.repository.create(data_dict)
+        await self.insert_exercise_relations(
+            instance.id, [m.model_dump() for m in muscles], MuscleExerciseRel
+        )
+        await self.insert_exercise_relations(
+            instance.id, [m.model_dump() for m in equipments], EquipmentExerciseRel
+        )

@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict
 from ..utils.enums import ExerciseTypeEnum
 
 from .gym import (
+    EquipmentFrontCreate,
+    MuscleFrontCreate,
     MuscleFrontRead,
     MuscleRead,
     EquipmentRead,
@@ -24,6 +26,8 @@ class ExerciseCreate(BaseModel):
     author_id: UUID | None = None
     is_public: bool = False
     is_active: bool = True
+    muscles: list[MuscleFrontCreate] = []
+    equipments: list[EquipmentFrontCreate] = []
 
 
 class ExerciseUpdate(ExerciseCreate):

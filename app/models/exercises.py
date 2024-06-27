@@ -24,10 +24,12 @@ class Exercise(CommonUUIDMixin, BaseTable):
         secondary="equipment_exercise_rel"
     )
     equipment_details: Mapped[list["EquipmentExerciseRel"]] = relationship(
-        back_populates="exercise"
+        back_populates="exercise",
+        cascade="all, delete",
     )
     muscle_details: Mapped[list["MuscleExerciseRel"]] = relationship(
-        back_populates="exercise"
+        back_populates="exercise",
+        cascade="all, delete",
     )
 
 
