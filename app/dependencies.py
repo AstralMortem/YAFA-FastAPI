@@ -1,14 +1,7 @@
-from app import repository
+from .repository.exercise_repository import ExerciseRepository
+from .services.exercise_service import ExerciseService
 from .repository.muscle_repository import MuscleRepository
 from .services.muscle_service import MuscleService
-from .repository.mixin import (
-    _DTO_CREATE,
-    _DTO_LIST,
-    _DTO_READ,
-    _DTO_UPDATE,
-    _ORM_MODEL,
-    SQLAlchemyRepository,
-)
 from .repository.equipment_repository import EquipmentRepository
 from .services.equipment_service import EquipmentService
 from .services.auth import fastapi_users
@@ -34,3 +27,10 @@ def get_muscle_service():
 
 
 muscle_service = Annotated[MuscleService, Depends(get_muscle_service)]
+
+
+def get_exercise_service():
+    return ExerciseService(ExerciseRepository)
+
+
+exercise_service = Annotated[ExerciseService, Depends(get_exercise_service)]

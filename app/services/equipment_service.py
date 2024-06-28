@@ -20,3 +20,5 @@ class EquipmentService(
 ):
     def __init__(self, repository: type[EquipmentRepository]):
         self.repository = repository()
+        self.list_dto = EquipmentListDTO
+        self.read_dto = EquipmentReadDTO

@@ -21,12 +21,12 @@ class Exercise(CommonUUIDMixin, BaseTable):
     is_public: Mapped[bool] = mapped_column(default=False)
 
     equipments: Mapped[list["Equipment"]] = relationship(
-        secondary="equipment_exercise_rel"
-    )
-    equipment_details: Mapped[list["EquipmentExerciseRel"]] = relationship(
-        back_populates="exercise",
+        secondary="equipment_exercise_rel",
+        back_populates="exercises",
         cascade="all, delete",
+        lazy="selectin",
     )
+
     muscle_details: Mapped[list["MuscleExerciseRel"]] = relationship(
         back_populates="exercise",
         cascade="all, delete",
@@ -41,12 +41,6 @@ class EquipmentExerciseRel(TimestampMixin, BaseTable):
     exercise_id: Mapped[UUID] = mapped_column(
         ForeignKey("exercises.id"), primary_key=True
     )
-
-    # association between MuscleExerciseRel -> Exercise
-    exercise: Mapped["Exercise"] = relationship(back_populates="equipment_details")
-
-    # association between MuscleExerciseRel -> Equipment
-    equipment: Mapped["Equipment"] = relationship(back_populates="exercise_details")
 
 
 class MuscleExerciseRel(TimestampMixin, BaseTable):

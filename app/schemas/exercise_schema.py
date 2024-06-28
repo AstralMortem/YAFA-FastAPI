@@ -1,5 +1,7 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
+
+from .equipment_schema import EquipmentReadDTO
 from .mixin import ActiveDTOMixin, CommonDTOMixin
 from ..utils.enums import ExerciseTypeEnum
 
@@ -14,10 +16,12 @@ class ExerciseCreateDTO(ActiveDTOMixin, BaseModel):
     image: str | None = None
     author_id: UUID | None = None
     is_public: bool = False
+    equipments: list[int] = []
 
 
 class ExerciseListDTO(ExerciseCreateDTO):
     id: UUID
+    equipments: list[EquipmentReadDTO] = []
 
 
 class ExerciseUpdateDTO(ExerciseCreateDTO): ...

@@ -20,3 +20,5 @@ class MuscleService(
 ):
     def __init__(self, repository: type[MuscleRepository]):
         self.repository = repository()
+        self.list_dto = MuscleListDTO
+        self.read_dto = MuscleReadDTO

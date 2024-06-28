@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Generic
+from typing import Generic, TypeVar
 from pydantic import BaseModel
 from ..repository.mixin import (
-    _DTO_CREATE,
-    _DTO_LIST,
-    _DTO_READ,
-    _DTO_UPDATE,
     _ORM_MODEL,
     AbstractRepository,
     PrimaryKey,
     SQLAlchemyRepository,
 )
+
+_DTO_CREATE = TypeVar("_DTO_CREATE", bound=BaseModel)
+_DTO_UPDATE = TypeVar("_DTO_UPDATE", bound=BaseModel)
+_DTO_READ = TypeVar("_DTO_READ", bound=BaseModel)
+_DTO_LIST = TypeVar("_DTO_LIST", bound=BaseModel)
 
 
 class AbstractService(ABC):
@@ -44,25 +45,28 @@ class BaseService(
 ):
     def __init__(
         self,
-        repository: type[
-            SQLAlchemyRepository[
-                _ORM_MODEL, _DTO_CREATE, _DTO_UPDATE, _DTO_LIST, _DTO_READ
-            ]
-        ],
+        repository: type[SQLAlchemyRepository[_ORM_MODEL]],
     ):
         self.repository = repository()
+        self.list_dto: type[_DTO_LIST]
+        self.read_dto: type[_DTO_READ]
 
     async def get_item(self, pk: PrimaryKey):
-        return await self.repository.get(pk)
+        instance = await self.repository.get(pk)
+        return self.read_dto.model_validate(instance)
 
     async def get_items(self):
-        return await self.repository.filter(None, None)
+        instance = await self.repository.filter(None, None)
+        return [self.list_dto.model_validate(row) for row in instance]
 
     async def create_item(self, data: _DTO_CREATE):
-        return await self.repository.create(data)
+        instance = await self.repository.create(data.model_dump())
+        return self.list_dto.model_validate(instance)
 
     async def update_item(self, pk: PrimaryKey, data: _DTO_UPDATE):
-        return await self.repository.update(pk, data)
+        instance = await self.repository.update(pk, data.model_dump())
+        return self.read_dto.model_validate(instance)
 
     async def delete_item(self, pk: PrimaryKey):
-        return await self.repository.delete(pk)
+        instance = await self.repository.delete(pk)
+        return self.read_dto.model_validate(instance)
