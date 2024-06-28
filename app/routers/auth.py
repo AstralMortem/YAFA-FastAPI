@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from ..services.auth import fastapi_users, auth_backend
-from ..schemas.auth import UserCreate, UserRead, UserUpdate
+from ..schemas.auth_schema import UserCreate, UserRead, UserUpdate
 from ..config import settings
 from ..utils.oauth import google_oauth_client
 

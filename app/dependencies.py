@@ -1,28 +1,36 @@
+from app import repository
+from .repository.muscle_repository import MuscleRepository
+from .services.muscle_service import MuscleService
+from .repository.mixin import (
+    _DTO_CREATE,
+    _DTO_LIST,
+    _DTO_READ,
+    _DTO_UPDATE,
+    _ORM_MODEL,
+    SQLAlchemyRepository,
+)
+from .repository.equipment_repository import EquipmentRepository
+from .services.equipment_service import EquipmentService
+from .services.auth import fastapi_users
 from typing import Annotated
 from fastapi import Depends
-from .services.auth import fastapi_users
 from .models.auth import User
-from .services.gym import EquipmentService, MuscleService
-from .services.exercises import ExerciseService
-from .repositories.gym import EquipmentRepository, MuscleRepository
-from .repositories.exercises import ExerciseRepository
 
 
 secured_route: Annotated[User, Depends()] = Depends(
     fastapi_users.current_user(active=True)
 )
 
-equipment_service = Annotated[
-    EquipmentService,
-    Depends(lambda: EquipmentService(EquipmentRepository)),
-]
 
-muscle_service = Annotated[
-    MuscleService,
-    Depends(lambda: MuscleService(MuscleRepository)),
-]
+def get_equipment_service():
+    return EquipmentService(EquipmentRepository)
 
-exercise_service = Annotated[
-    ExerciseService,
-    Depends(lambda: ExerciseService(ExerciseRepository)),
-]
+
+equipment_service = Annotated[EquipmentService, Depends(get_equipment_service)]
+
+
+def get_muscle_service():
+    return MuscleService(MuscleRepository)
+
+
+muscle_service = Annotated[MuscleService, Depends(get_muscle_service)]

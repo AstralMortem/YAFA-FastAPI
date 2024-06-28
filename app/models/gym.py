@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .mixins import CommonIntMixin, BaseTable
 
 if TYPE_CHECKING:
-    from .exercises import EquipmentExerciseRel, MuscleExerciseRel, Exercise
+    from .exercises import EquipmentExerciseRel, MuscleExerciseRel
 
 
 class Equipment(CommonIntMixin, BaseTable):
@@ -12,9 +12,9 @@ class Equipment(CommonIntMixin, BaseTable):
     image: Mapped[str | None] = mapped_column(default=None)
 
     # association between Equipment -> EquipmentExerciseRel -> Exercise
-    exercise_details: Mapped[list["EquipmentExerciseRel"]] = relationship(
-        back_populates="equipment"
-    )
+    # exercise_details: Mapped[list["EquipmentExerciseRel"]] = relationship(
+    #     back_populates="equipment"
+    # )
 
 
 class Muscle(CommonIntMixin, BaseTable):
@@ -23,6 +23,6 @@ class Muscle(CommonIntMixin, BaseTable):
     image: Mapped[str | None] = mapped_column(default=None)
 
     # association between Muscle -> MuscleExerciseRel -> Exercise
-    exercise_details: Mapped[list["MuscleExerciseRel"]] = relationship(
-        back_populates="muscle"
-    )
+    # exercise_details: Mapped[list["MuscleExerciseRel"]] = relationship(
+    #     back_populates="muscle"
+    # )
