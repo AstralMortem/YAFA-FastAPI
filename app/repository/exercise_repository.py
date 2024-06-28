@@ -29,17 +29,3 @@ class ExerciseRepository(SQLAlchemyRepository[Exercise]):
             await session.commit()
             await session.refresh(instance)
             return instance
-
-    # async def filter(
-    #     self,
-    #     conditions: Tuple[BinaryExpression] | None,
-    #     options: Tuple[ExecutableOption] | None,
-    # ):
-    #     async with sessionmanager.session() as session:
-    #         q = select(self.model).options(
-    #             selectinload(self.model.equipments_association).joinedload(
-    #                 EquipmentExerciseRel.exercise
-    #             )
-    #         )
-    #         result = await session.execute(q)
-    #         return list(result.scalars())

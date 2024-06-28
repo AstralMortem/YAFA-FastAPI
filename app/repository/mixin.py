@@ -86,10 +86,13 @@ class SQLAlchemyRepository(
 
     async def update(self, pk: str | int | UUID, data: dict[str, Any]):
         async with sessionmanager.session() as session:
-            instance = await self.get(pk)
-            for key, val in data:
+            instance = await session.get(self.model, pk)
+            if not instance:
+                raise ModelDoesNotExists(self.model)
+            for key, val in data.items():
                 setattr(instance, key, val)
             await session.commit()
+            await session.refresh(instance)
             return instance
 
     async def delete(self, pk: str | int | UUID):
