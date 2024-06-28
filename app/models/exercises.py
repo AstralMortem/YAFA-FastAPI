@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 from sqlalchemy import Enum, ForeignKey
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .mixins import BaseTable, CommonUUIDMixin, TimestampMixin
 from ..utils.enums import ExerciseTypeEnum, MuscleEnum
@@ -20,17 +21,16 @@ class Exercise(CommonUUIDMixin, BaseTable):
     author_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), default=None)
     is_public: Mapped[bool] = mapped_column(default=False)
 
-    equipments: Mapped[list["Equipment"]] = relationship(
-        secondary="equipment_exercise_rel",
-        back_populates="exercises",
-        cascade="all, delete",
-        lazy="selectin",
+    equipments_association: Mapped[list["EquipmentExerciseRel"]] = relationship(
+        back_populates="exercise", cascade="all, delete", lazy="selectin"
+    )
+    equipments = association_proxy("equipments_association", "equipment")
+
+    muscles_association: Mapped[list["MuscleExerciseRel"]] = relationship(
+        back_populates="exercise", cascade="all, delete", lazy="selectin"
     )
 
-    muscle_details: Mapped[list["MuscleExerciseRel"]] = relationship(
-        back_populates="exercise",
-        cascade="all, delete",
-    )
+    muscles = association_proxy("muscles_association", "muscle")
 
 
 class EquipmentExerciseRel(TimestampMixin, BaseTable):
@@ -40,6 +40,14 @@ class EquipmentExerciseRel(TimestampMixin, BaseTable):
     )
     exercise_id: Mapped[UUID] = mapped_column(
         ForeignKey("exercises.id"), primary_key=True
+    )
+
+    # association between EquipmentExerciseRel -> Exercise
+    exercise: Mapped["Exercise"] = relationship(back_populates="equipments_association")
+
+    # association between EquipmentExerciseRel -> Equipment
+    equipment: Mapped["Equipment"] = relationship(
+        back_populates="exercises_association", lazy="joined"
     )
 
 
@@ -53,7 +61,9 @@ class MuscleExerciseRel(TimestampMixin, BaseTable):
     type: Mapped[Enum] = mapped_column(Enum(MuscleEnum))
 
     # association between MuscleExerciseRel -> Exercise
-    exercise: Mapped["Exercise"] = relationship(back_populates="muscle_details")
+    exercise: Mapped["Exercise"] = relationship(back_populates="muscles_association")
 
     # association between MuscleExerciseRel -> Muscle
-    muscle: Mapped["Muscle"] = relationship(back_populates="exercise_details")
+    muscle: Mapped["Muscle"] = relationship(
+        back_populates="exercises_association", lazy="joined"
+    )

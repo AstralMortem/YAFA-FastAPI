@@ -1,4 +1,6 @@
 from pydantic import BaseModel, ConfigDict
+
+from ..utils.enums import MuscleEnum
 from .mixin import CommonDTOMixin
 
 
@@ -16,3 +18,8 @@ class MuscleListDTO(MuscleCreateDTO):
 
 
 class MuscleReadDTO(CommonDTOMixin, MuscleListDTO): ...
+
+
+class MuscleReadRelDTO(MuscleListDTO):
+    type: MuscleEnum
+    procent: int

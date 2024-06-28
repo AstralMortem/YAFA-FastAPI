@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Generic, Optional, Tuple, TypeVar
 from uuid import UUID
 from sqlalchemy import BinaryExpression, select
+from sqlalchemy.orm.interfaces import ORMOption
 from sqlalchemy.sql.base import ExecutableOption
 
 from ..exceptions import ModelDoesNotExists
@@ -51,9 +52,11 @@ class SQLAlchemyRepository(
 ):
     model: type[_ORM_MODEL]
 
-    async def get(self, pk: str | int | UUID):
+    async def get(
+        self, pk: str | int | UUID, options: Optional[Tuple[ORMOption]] = None
+    ):
         async with sessionmanager.session() as session:
-            instance = await session.get(self.model, pk)
+            instance = await session.get(self.model, pk, options=options)
             if not instance:
                 raise ModelDoesNotExists(self.model)
             return instance

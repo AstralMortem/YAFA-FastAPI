@@ -1,7 +1,13 @@
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
-from .equipment_schema import EquipmentReadDTO
+from .muscle_schema import MuscleListDTO, MuscleReadDTO, MuscleReadRelDTO
+
+from .equipment_schema import (
+    EquipmentExerciseCreateDTO,
+    EquipmentListDTO,
+    MuscleExerciseCreateDTO,
+)
 from .mixin import ActiveDTOMixin, CommonDTOMixin
 from ..utils.enums import ExerciseTypeEnum
 
@@ -16,15 +22,18 @@ class ExerciseCreateDTO(ActiveDTOMixin, BaseModel):
     image: str | None = None
     author_id: UUID | None = None
     is_public: bool = False
-    equipments: list[int] = []
+    equipments: list[EquipmentExerciseCreateDTO] = []
+    muscles: list[MuscleExerciseCreateDTO] = []
 
 
 class ExerciseListDTO(ExerciseCreateDTO):
     id: UUID
-    equipments: list[EquipmentReadDTO] = []
+    equipments: list[EquipmentListDTO] = []
+    muscles: list[MuscleListDTO] = []
 
 
 class ExerciseUpdateDTO(ExerciseCreateDTO): ...
 
 
-class ExerciseReadDTO(CommonDTOMixin, ExerciseListDTO): ...
+class ExerciseReadDTO(CommonDTOMixin, ExerciseListDTO):
+    muscles: list[MuscleReadRelDTO] = []
