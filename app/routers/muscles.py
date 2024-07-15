@@ -5,7 +5,7 @@ from ..schemas.muscle_schema import MuscleCreateDTO, MuscleUpdateDTO
 from ..dependencies import muscle_service
 
 
-router = APIRouter(prefix="/muscles", tags=["muscles"])
+router = APIRouter(prefix="/muscles", tags=["Muscles"])
 
 
 @router.get("")

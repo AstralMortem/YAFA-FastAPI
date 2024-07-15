@@ -7,10 +7,7 @@ from .equipments import router as equipment_r
 
 from .muscles import router as muscle_r
 
+from .routines import router as routine_r
 
-routers_list: list[APIRouter] = [
-    auth_r,
-    exercises_r,
-    equipment_r,
-    muscle_r,
-]
+
+routers_list: list[APIRouter] = [auth_r, exercises_r, equipment_r, muscle_r, routine_r]

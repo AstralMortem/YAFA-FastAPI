@@ -1,3 +1,5 @@
+from .repository.routine_repository import RoutineRepository
+from .services.routine_service import RoutineService
 from .repository.exercise_repository import ExerciseRepository
 from .services.exercise_service import ExerciseService
 from .repository.muscle_repository import MuscleRepository
@@ -8,7 +10,6 @@ from .services.auth import fastapi_users
 from typing import Annotated
 from fastapi import Depends
 from .models.auth import User
-
 
 secured_route: Annotated[User, Depends()] = Depends(
     fastapi_users.current_user(active=True)
@@ -34,3 +35,10 @@ def get_exercise_service():
 
 
 exercise_service = Annotated[ExerciseService, Depends(get_exercise_service)]
+
+
+def get_routine_service():
+    return RoutineService(RoutineRepository)
+
+
+routine_service = Annotated[RoutineService, Depends(get_routine_service)]
