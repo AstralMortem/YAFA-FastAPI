@@ -48,3 +48,21 @@ class ExerciseService(
         data["muscles"] = muscles
         data["equipments"] = instance.equipments
         return ExerciseReadDTO.model_validate(data)
+
+    async def update_item(self, pk: str | int | UUID, data: ExerciseUpdateDTO):
+        instance = await self.repository.update(pk, data.model_dump())
+        muscles: list[MuscleReadRelDTO] = []
+        for muscle in instance.muscles_association:
+            muscles.append(
+                MuscleReadRelDTO(
+                    procent=muscle.procent,
+                    type=MuscleEnum(muscle.type),
+                    id=muscle.muscle.id,
+                    image=muscle.muscle.image,
+                    title=muscle.muscle.title,
+                )
+            )
+        new_data = {**instance.__dict__}
+        new_data["muscles"] = muscles
+        new_data["equipments"] = instance.equipments
+        return ExerciseReadDTO.model_validate(new_data)

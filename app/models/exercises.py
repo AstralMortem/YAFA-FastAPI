@@ -22,12 +22,16 @@ class Exercise(CommonUUIDMixin, BaseTable):
     is_public: Mapped[bool] = mapped_column(default=False)
 
     equipments_association: Mapped[list["EquipmentExerciseRel"]] = relationship(
-        back_populates="exercise", cascade="all, delete", lazy="selectin"
+        back_populates="exercise",
+        cascade="save-update, merge, delete, delete-orphan",
+        lazy="selectin",
     )
     equipments = association_proxy("equipments_association", "equipment")
 
     muscles_association: Mapped[list["MuscleExerciseRel"]] = relationship(
-        back_populates="exercise", cascade="all, delete", lazy="selectin"
+        back_populates="exercise",
+        cascade="save-update, merge, delete, delete-orphan",
+        lazy="selectin",
     )
 
     muscles = association_proxy("muscles_association", "muscle")
