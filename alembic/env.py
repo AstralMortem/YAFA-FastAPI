@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 from app.config import settings
 from app.models.mixins import BaseTable
-from app.models import auth, exercises, gym
+from app.models import auth, exercises, gym, routines
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

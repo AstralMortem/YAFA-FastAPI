@@ -8,6 +8,7 @@ from ..utils.enums import ExerciseTypeEnum, MuscleEnum
 
 if TYPE_CHECKING:
     from .gym import Muscle, Equipment
+    from .routines import ExerciseRoutineRel
 
 
 class Exercise(CommonUUIDMixin, BaseTable):
@@ -21,6 +22,7 @@ class Exercise(CommonUUIDMixin, BaseTable):
     author_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"), default=None)
     is_public: Mapped[bool] = mapped_column(default=False)
 
+    # association between Exercise -> EquipmentExerciseRel
     equipments_association: Mapped[list["EquipmentExerciseRel"]] = relationship(
         back_populates="exercise",
         cascade="save-update, merge, delete, delete-orphan",
@@ -28,6 +30,7 @@ class Exercise(CommonUUIDMixin, BaseTable):
     )
     equipments = association_proxy("equipments_association", "equipment")
 
+    # association between Exercise -> MuscleExerciseRel
     muscles_association: Mapped[list["MuscleExerciseRel"]] = relationship(
         back_populates="exercise",
         cascade="save-update, merge, delete, delete-orphan",
@@ -35,6 +38,13 @@ class Exercise(CommonUUIDMixin, BaseTable):
     )
 
     muscles = association_proxy("muscles_association", "muscle")
+
+    # association between Exercise -> ExerciseRoutineRel -> Routine
+    routine_association: Mapped[list["ExerciseRoutineRel"]] = relationship(
+        back_populates="exercise",
+        cascade="save-update, merge, delete, delete-orphan",
+        lazy="selectin",
+    )
 
 
 class EquipmentExerciseRel(TimestampMixin, BaseTable):
