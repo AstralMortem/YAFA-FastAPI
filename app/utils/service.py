@@ -1,7 +1,5 @@
-from ast import Call
-from typing import Any, Callable, Generic, Self, TypeVar
+from typing import Callable, Generic, TypeVar
 from pydantic import BaseModel
-from sqlalchemy import BinaryExpression
 
 from .repository import PrimaryKey, SQLAlchemyRepository, Model
 
