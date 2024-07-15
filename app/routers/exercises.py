@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 from fastapi import APIRouter, Depends
 
-from app.schemas.exercises import ExerciseCreate, ExerciseUpdate
+from ..schemas.exercise_schema import ExerciseCreateDTO, ExerciseUpdateDTO
 from ..dependencies import exercise_service
 
 router = APIRouter(prefix="/exercises", tags=["Exercises"])
@@ -10,30 +10,30 @@ router = APIRouter(prefix="/exercises", tags=["Exercises"])
 
 @router.get("")
 async def get_all_exercises(service: exercise_service):
-    return await service.get_joined_exercises()
+    return await service.get_items()
 
 
 @router.get("/{exercise_id}")
 async def get_exercise(exercise_id: UUID, service: exercise_service):
-    return await service.get_joined_exercise_by_id(exercise_id)
+    return await service.get_item(exercise_id)
 
 
 @router.post("")
 async def insert_exercise(
-    data: Annotated[ExerciseCreate, Depends()], service: exercise_service
+    data: Annotated[ExerciseCreateDTO, Depends()], service: exercise_service
 ):
-    return await service.add(data)
+    return await service.create_item(data)
 
 
 @router.patch("/{exercise_id}")
 async def update_exercise(
     exercise_id: UUID,
-    data: Annotated[ExerciseUpdate, Depends()],
+    data: Annotated[ExerciseUpdateDTO, Depends()],
     service: exercise_service,
 ):
-    return await service.update(exercise_id, data)
+    return await service.update_item(exercise_id, data)
 
 
 @router.delete("/{exercise_id}")
 async def delete_exercise(exercise_id: UUID, service: exercise_service):
-    return await service.delete(exercise_id)
+    return await service.delete_item(exercise_id)
