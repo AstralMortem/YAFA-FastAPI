@@ -17,27 +17,27 @@ _DTO_LIST = TypeVar("_DTO_LIST", bound=BaseModel)
 class AbstractService(ABC):
     @abstractmethod
     def __init__(self, repository: type[AbstractRepository]):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def get_item(self, pk: PrimaryKey):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def get_items(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def create_item(self, data: BaseModel):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def update_item(self, pk: PrimaryKey, data: BaseModel):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def delete_item(self, pk: PrimaryKey):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class BaseService(

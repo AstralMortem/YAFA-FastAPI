@@ -19,7 +19,7 @@ class AbstractRepository(ABC):
 
     @abstractmethod
     async def get(self, pk: PrimaryKey):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def filter(
@@ -27,23 +27,23 @@ class AbstractRepository(ABC):
         conditions: Optional[Tuple[BinaryExpression]],
         options: Optional[Tuple[ExecutableOption]],
     ):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def create(self, data: dict[str, Any]):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def update(self, pk, data: dict[str, Any]):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def delete(self, pk: PrimaryKey):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     async def custom(self, statement):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class SQLAlchemyRepository(
